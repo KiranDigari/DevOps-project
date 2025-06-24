@@ -1,7 +1,8 @@
 #!/bin/bash
 
+# Install dependencies
 apt update -y
-apt install -y git sudo curl wget
+apt install -y git curl wget maven
 
 # Install Java 19
 wget https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2+7/OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz
@@ -13,10 +14,11 @@ export PATH=$JAVA_HOME/bin:$PATH
 # Verify Java
 java -version
 
-# Clone repo
+# Clone and run the app
 cd /opt
 git clone https://github.com/KiranDigari/DevOps-project.git
-cd DevOps-project/assignment-1 || exit 1
+cd DevOps-project/assignment-1
+mvn spring-boot:run &
 
-# Auto-shutdown after X minutes
-sudo shutdown -h +${shutdown_after_minutes}
+# Auto shutdown (optional)
+shutdown -h +10
