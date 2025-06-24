@@ -1,23 +1,25 @@
 #!/bin/bash
 
-# Stop on error
-set -e
+apt update -y
+apt install -y git curl wget
 
-# Update and install dependencies
-sudo apt update -y
-sudo apt install -y git curl fontconfig openjdk-19-jdk python3
 
-# Print Java version
+wget https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2+7/OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz
+mkdir -p /opt/java
+tar -xvzf OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz -C /opt/java
+export JAVA_HOME=/opt/java/jdk-19.0.2+7
+export PATH=$JAVA_HOME/bin:$PATH
+
+# Verify Java installation
 java -version
 
-# Clone the repo
+# Clone your GitHub repo
 cd /opt
-git clone ${repo_url}
-cd assignment-1
+git clone https://github.com/KiranDigari/DevOps-project.git
+cd DevOps-project/assignment-1
 
-# Run the app on port 80
-sudo nohup python3 -m http.server 80 &
+# Placeholder for future .jar
+# sudo nohup java -jar your-app.jar --server.port=80 &
 
-# Shutdown the instance after X minutes
+# Auto-shutdown after X minutes
 sudo shutdown -h +${shutdown_after_minutes}
-
