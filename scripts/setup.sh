@@ -22,4 +22,4 @@ cd DevOps-project/assignment-1
 # sudo nohup java -jar your-app.jar --server.port=80 &
 
 # Auto-shutdown after X minutes
-sudo shutdown -h +${shutdown_after_minutes}
+sudo shutdown -h +${shutdown_after_minutes)
