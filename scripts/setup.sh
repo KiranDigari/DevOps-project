@@ -1,33 +1,34 @@
 #!/bin/bash
-
-# Log all output to a file
-exec > /var/log/setup-script.log 2>&1
+exec > /var/log/user-data.log 2>&1
 set -e
 
-# Install dependencies
+# 1. Install system tools
 apt update -y
 apt install -y git curl wget maven
 
-# Install Java 19
+# 2. Download & extract Java 19
+cd /opt
 wget https://github.com/adoptium/temurin19-binaries/releases/download/jdk-19.0.2+7/OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz
 mkdir -p /opt/java
-tar -xvzf OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz -C /opt/java
+tar -xzf OpenJDK19U-jdk_x64_linux_hotspot_19.0.2_7.tar.gz -C /opt/java
 
-# Set Java environment variables for this script AND system-wide
-export JAVA_HOME=/opt/java/jdk-19.0.2+7
-export PATH=$JAVA_HOME/bin:$PATH
+# 3. Symlink java & javac into /usr/local/bin
+ln -sf /opt/java/jdk-19.0.2+7/bin/java   /usr/local/bin/java
+ln -sf /opt/java/jdk-19.0.2+7/bin/javac  /usr/local/bin/javac
 
-echo "export JAVA_HOME=/opt/java/jdk-19.0.2+7" >> /etc/profile
-echo 'export PATH=$JAVA_HOME/bin:$PATH' >> /etc/profile
-
-# Verify Java
+# 4. Verify Java
 java -version
 
-# Clone and run the app
+# 5. Clone your application
 cd /opt
 git clone https://github.com/KiranDigari/DevOps-project.git
 cd DevOps-project
-mvn spring-boot:run > /opt/app.log 2>&1 &
 
-# Auto shutdown
-shutdown -h +10
+# 6. Build with Maven
+mvn clean package -DskipTests
+
+# 7. Run the Spring Boot JAR on port 80
+sudo nohup java -jar target/*.jar --server.port=80 > /opt/app.log 2>&1 &
+
+# 8. Auto-shutdown after 30 minutes
+sudo shutdown -h +30
