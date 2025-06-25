@@ -54,3 +54,24 @@ resource "aws_instance" "app" {
   }
 }
 
+resource "aws_instance" "s3_read_tester" {
+  ami                         = "ami-0f918f7e67a3323f0"
+  instance_type               = "t2.micro"
+  vpc_security_group_ids      = [aws_security_group.web_sg.id]
+  key_name                    = "project.key"
+  iam_instance_profile        = aws_iam_instance_profile.read_profile.name
+
+  user_data = <<-EOF
+              #!/bin/bash
+              sudo apt update -y
+              sudo apt install unzip curl -y
+              curl "https://awscli.amazonaws.com/awscli-exe-linux-x86_64.zip" -o "awscliv2.zip"
+              unzip awscliv2.zip
+              sudo ./aws/install
+              EOF
+
+  tags = {
+    Name  = "S3-Read-Tester-${var.stage}"
+    Stage = var.stage
+  }
+}
