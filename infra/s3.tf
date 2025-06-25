@@ -1,16 +1,13 @@
 resource "aws_s3_bucket" "logs_bucket" {
   bucket        = var.bucket_name
-  force_destroy = true  # optional: helpful during testing
+  force_destroy = true
+
+  object_ownership = "BucketOwnerEnforced"  # Disable ACLs explicitly
 
   tags = {
     Name  = "LogsBucket"
     Stage = var.stage
   }
-}
-
-resource "aws_s3_bucket_acl" "private_acl" {
-  bucket = aws_s3_bucket.logs_bucket.id
-  acl    = "private"
 }
 
 resource "aws_s3_bucket_lifecycle_configuration" "logs_lifecycle" {
@@ -25,7 +22,8 @@ resource "aws_s3_bucket_lifecycle_configuration" "logs_lifecycle" {
     }
 
     filter {
-      prefix = ""  # apply to all files
+      prefix = ""  # Apply to all files
     }
   }
 }
+
