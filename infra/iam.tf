@@ -63,3 +63,7 @@ resource "aws_iam_instance_profile" "write_profile" {
   name = "ec2-write-profile"
   role = aws_iam_role.s3_write_role.name
 }
+resource "aws_iam_instance_profile" "read_profile" {
+  name = "ec2-read-profile"
+  role = aws_iam_role.s3_read_role.name
+}
