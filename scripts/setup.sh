@@ -11,14 +11,16 @@ echo "export JAVA_HOME=/opt/java-19" >> /etc/profile
 echo "export PATH=\$PATH:/opt/java-19/bin" >> /etc/profile
 source /etc/profile
 
-# Clone the GitHub repo passed from Terraform
+# Clone your GitHub repo
 cd /home/ubuntu
 git clone "${repo_url}"
-cd devops-project  # or adjust based on the repo name
+cd DevOps-project/app
 
-# Build & run app (adjust path if needed)
+# Build the Spring Boot app
 mvn clean package
-sudo nohup java -jar target/*.jar > app.log 2>&1 &
 
-# Schedule shutdown
+# Run the .jar (on port 80)
+sudo nohup java -jar target/*.jar --server.port=80 > /home/ubuntu/app.log 2>&1 &
+
+# Shutdown after X minutes
 shutdown -h +${shutdown_after_minutes}
