@@ -1,0 +1,39 @@
+name: Deploy EC2 with Terraform
+
+on:
+  push:
+    branches:
+      - main
+    tags:
+      - 'deploy-dev'
+      - 'deploy-prod'
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    env:
+      STAGE: dev
+      BUCKET_NAME: remote-backend-using-s3
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Terraform
+      uses: hashicorp/setup-terraform@v2
+      with:
+        terraform_version: 1.6.6
+
+    - name: Configure AWS Credentials
+      uses: aws-actions/configure-aws-credentials@v2
+      with:
+        aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+        aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+        aws-region: ap-south-1
+
+    - name: Terraform Init
+      run: terraform -chdir=infra init
+
+    - name: Terraform Apply
+      run: terraform -chdir=infra apply -auto-approve -var="stage=${{ env.STAGE }}" -var="bucket_name=${{ env.BUCKET_NAME }}"
