@@ -2,7 +2,7 @@ resource "aws_s3_bucket" "logs_bucket" {
   bucket        = var.bucket_name
   force_destroy = true
 
-  # object_ownership = "BucketOwnerEnforced"  # Commented out: not supported in older AWS provider versions
+
 
   tags = {
     Name  = "LogsBucket"
